@@ -1,5 +1,5 @@
-from combine_spotify_csvs import combine_spotify_csv
-from process_spotify_data import process_spotify_csv
+from combine_spotify_csvs_01 import combine_spotify_csv
+from process_spotify_data_02 import process_spotify_csv
 
 
 def run_all_ingestion():
