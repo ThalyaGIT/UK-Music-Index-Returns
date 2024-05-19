@@ -2,12 +2,12 @@ import os
 import pandas as pd
 import re
 
-def combine_spotify_csv():
+def combine_data_spotify_csvs():
     # Get the current working directory
     current_directory = os.path.dirname(os.path.abspath(__file__))
 
     # Define the directory containing the CSV files using an absolute path
-    directory = os.path.join(os.path.dirname(current_directory), 'data', 'raw', 'charts')
+    directory = os.path.join(os.path.dirname(current_directory), 'data', 'Spotify', 'csvs')
 
     # List to hold dataframes
     dataframes = []
@@ -28,7 +28,7 @@ def combine_spotify_csv():
     combined_df = pd.concat(dataframes, ignore_index=True)
 
     # Define the output file path
-    output_file_path = os.path.join(os.path.dirname(current_directory), 'data', 'raw', 'combined_spotify_tracks.csv')
+    output_file_path = os.path.join(os.path.dirname(current_directory), 'data', 'Spotify', '01_combined_data_spotify.csv')
 
     # Save the combined dataframe to a CSV file
     combined_df.to_csv(output_file_path, index=False)
