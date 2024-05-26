@@ -36,3 +36,7 @@ def combine_data_spotify_csvs():
     print(f'All CSV files have been combined into {output_file_path}')
 
     return output_file_path
+
+def validate_dates_complete():
+    
+    return 1
