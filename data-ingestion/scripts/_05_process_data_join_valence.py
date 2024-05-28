@@ -10,9 +10,6 @@ def merge_charts_with_valence(unique_tracks_filepath,all_tracks_filepath):
     # Merge the DataFrames on 'track_id'
     merged_df = pd.merge(all_tracks_df, unique_tracks_df, on='track_id', how='left')
 
-    # Display the first few rows of the merged DataFrame
-    print(merged_df.head())
-
     # Define the output file path
     output_file_path = os.path.join(os.path.dirname(all_tracks_filepath), '05_merged_charts_with_valence.csv')
 
