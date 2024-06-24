@@ -14,11 +14,10 @@ df = pd.read_csv(input_file_path)
 # Ensure the 'date' column is in datetime format
 df['Date'] = pd.to_datetime(df['date'])
 
-# Calculate SWAV for each day
-df['SWAV'] = df['Valence'] * df['streams']
+# Group by date and calculate SWAV
+df = df.groupby('Date').apply(lambda x: (x['streams'] * x['Valence']).sum() / x['streams'].sum()).reset_index(name='SWAV')
 
-# Calculate lagged SWAV for each day (SWAV from seven days before)
-df['SWAV_lagged'] = df.groupby('Date')['SWAV'].rolling(window=7, min_periods=1).sum().shift(7).reset_index(level=0, drop=True)
+df['SWAV_lagged'] = df['SWAV'].shift(7)
 
 # Calculate Change in SWAV
 df['Change in SWAV'] = df['SWAV'] - df['SWAV_lagged']
