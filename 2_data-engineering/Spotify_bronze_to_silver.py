@@ -3,7 +3,7 @@ import os
 
 # Paths
 data_folder = os.path.join(os.path.dirname(__file__), '..', '0_data-bronze')
-input_file_path  = os.path.join(data_folder, 'ingested_Spotify_5.csv')
+input_file_path = os.path.join(data_folder, 'ingested_Spotify_5.csv')
 
 silver_folder = os.path.join(os.path.dirname(__file__), '..', '0-data-silver')
 output_file_path = os.path.join(silver_folder, 'Spotify.csv')
@@ -12,23 +12,21 @@ output_file_path = os.path.join(silver_folder, 'Spotify.csv')
 df = pd.read_csv(input_file_path)
 
 # Ensure the 'date' column is in datetime format
-df['date'] = pd.to_datetime(df['date'])
+df['Date'] = pd.to_datetime(df['date'])
 
-# Create a new column for the end of week date set to Friday
-df['End of Week Date'] = df['date'] + pd.offsets.Week(weekday=4)  # Set to the last day (Friday) of the week
+# Calculate SWAV for each day
+df['SWAV'] = df['Valence'] * df['streams']
 
-# Group by 'End of Week Date' and calculate SWAV
-weekly_swav = df.groupby('End of Week Date').apply(lambda x: pd.Series({
-    'SWAV': (x['streams'] * x['Valence']).sum() / x['streams'].sum()
-})).reset_index()
+# Calculate lagged SWAV for each day (SWAV from seven days before)
+df['SWAV_lagged'] = df.groupby('Date')['SWAV'].rolling(window=7, min_periods=1).sum().shift(7).reset_index(level=0, drop=True)
 
-# Calculate Change in SWAV compared to the previous week
-weekly_swav['Change in SWAV'] = weekly_swav['SWAV'].diff()
+# Calculate Change in SWAV
+df['Change in SWAV'] = df['SWAV'] - df['SWAV_lagged']
 
-# Keep only relevant Columns
-weekly_swav = weekly_swav[['End of Week Date', 'Change in SWAV']]
+# Select relevant columns
+result_df = df[['Date', 'SWAV', 'SWAV_lagged', 'Change in SWAV']].drop_duplicates(subset=['Date'], keep='last')
 
-# Save the result to a new CSV file
-weekly_swav.to_csv(output_file_path, index=False)
+# Save to CSV
+result_df.to_csv(output_file_path, index=False)
 
-print(f"Weekly SWAV CSV saved to: {output_file_path}")
+print(f"SWAV with lag and change CSV saved to: {output_file_path}")

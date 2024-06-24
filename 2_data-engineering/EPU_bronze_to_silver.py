@@ -11,32 +11,26 @@ df = pd.read_csv(csv_file)
 # Ensure the date column is in datetime format
 df['Date'] = pd.to_datetime(df['Date'])
 
+# Sort the DataFrame by date if it's not already sorted
+df = df.sort_values(by='Date')
+
 # Set the date column as the index
 df.set_index('Date', inplace=True)
 
-# Resample the data to get the last closing price of each week (last trading day of each week)
-weekly_df = df['EPU Index'].resample('W-FRI').last()
-
-# Create a new DataFrame to store the required columns
-result_df = pd.DataFrame()
-result_df['End of Week Date'] = weekly_df.index
-result_df['EOW EPU Index'] = weekly_df.values
-
-# Shift the 'This Week's End of Week Closing' column to get the 'Previous End of Week Closing'
-result_df['Previous EOW EPU Index'] = result_df['EOW EPU Index'].shift(1)
+# Shift the 'EPU Index' column to get the lagged data
+df['Previous EPU Index'] = df['EPU Index'].shift(7)
 
 # Calculate the EPU_Change from the previous week's closing
-result_df['EPU_Change'] = (result_df['EOW EPU Index'] - result_df['Previous EOW EPU Index'])
+df['EPU_Change'] = df['EPU Index'] - df['Previous EPU Index']
 
-# Keep only relevant Columns
-result_df = result_df[['End of Week Date', 'EPU_Change']]
+# Keep only relevant columns
+result_df = df[['EPU Index', 'Previous EPU Index', 'EPU_Change']]
 
-# Drop the first row since it won't have a 'Previous End of Week Closing'
+# Drop rows with NaN values (the first 7 rows where lagged data is not available)
 result_df.dropna(inplace=True)
 
 # Reset the index to have a clean DataFrame
-result_df.reset_index(drop=True, inplace=True)
-
+result_df.reset_index(inplace=True)
 
 # Define the path to save the new CSV file in the "silver" folder
 silver_folder = os.path.join(os.path.dirname(__file__), '..', '0-data-silver')
