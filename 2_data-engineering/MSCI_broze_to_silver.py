@@ -26,16 +26,16 @@ result_df['This Week\'s End of Week Closing'] = weekly_df.values
 result_df['Previous End of Week Closing'] = result_df['This Week\'s End of Week Closing'].shift(1)
 
 # Calculate the percentage change from the previous week's closing
-result_df['% Change'] = ((result_df['This Week\'s End of Week Closing'] - result_df['Previous End of Week Closing']) / result_df['Previous End of Week Closing']) * 100
+result_df['% MSCI Change'] = ((result_df['This Week\'s End of Week Closing'] - result_df['Previous End of Week Closing']) / result_df['Previous End of Week Closing']) * 100
 
-# Round up % Change to 2 decimal places
-result_df['% Change'] = result_df['% Change'].apply(lambda x: round(x, 2))
+# Round up % MSCI Change to 2 decimal places
+result_df['% MSCI Change'] = result_df['% MSCI Change'].apply(lambda x: round(x, 2))
 
-# Calculate the previous week's % Change
-result_df['Previous Week % Change'] = result_df['% Change'].shift(1)
+# Calculate the previous week's % MSCI Change
+result_df['Previous Week % MSCI Change'] = result_df['% MSCI Change'].shift(1)
 
 # Keep only relevant Columns
-result_df = result_df[['End of Week Date', '% Change']]
+result_df = result_df[['End of Week Date', '% MSCI Change']]
 
 
 # Drop the first row since it won't have a 'Previous End of Week Closing'

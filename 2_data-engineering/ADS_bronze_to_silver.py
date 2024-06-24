@@ -25,11 +25,11 @@ result_df['EOW ADS Index'] = weekly_df.values
 # Shift the 'This Week's End of Week Closing' column to get the 'Previous End of Week Closing'
 result_df['Previous EOW ADS Index'] = result_df['EOW ADS Index'].shift(1)
 
-# Calculate the percentage change from the previous week's closing
-result_df['Change'] = (result_df['EOW ADS Index'] - result_df['Previous EOW ADS Index'])
+# Calculate the ADS_Change from the previous week's closing
+result_df['ADS_Change'] = (result_df['EOW ADS Index'] - result_df['Previous EOW ADS Index'])
 
 # Keep only relevant Columns
-result_df = result_df[['End of Week Date', 'Change']]
+result_df = result_df[['End of Week Date', 'ADS_Change']]
 
 # Drop the first row since it won't have a 'Previous End of Week Closing'
 result_df.dropna(inplace=True)

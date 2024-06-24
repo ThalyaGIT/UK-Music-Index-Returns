@@ -25,11 +25,11 @@ result_df['EOW EPU Index'] = weekly_df.values
 # Shift the 'This Week's End of Week Closing' column to get the 'Previous End of Week Closing'
 result_df['Previous EOW EPU Index'] = result_df['EOW EPU Index'].shift(1)
 
-# Calculate the percentage change from the previous week's closing
-result_df['Change'] = (result_df['EOW EPU Index'] - result_df['Previous EOW EPU Index'])
+# Calculate the EPU_Change from the previous week's closing
+result_df['EPU_Change'] = (result_df['EOW EPU Index'] - result_df['Previous EOW EPU Index'])
 
 # Keep only relevant Columns
-result_df = result_df[['End of Week Date', 'Change']]
+result_df = result_df[['End of Week Date', 'EPU_Change']]
 
 # Drop the first row since it won't have a 'Previous End of Week Closing'
 result_df.dropna(inplace=True)

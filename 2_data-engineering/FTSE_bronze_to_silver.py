@@ -26,16 +26,16 @@ result_df['This Week\'s End of Week Closing'] = weekly_df.values
 result_df['Previous End of Week Closing'] = result_df['This Week\'s End of Week Closing'].shift(1)
 
 # Calculate the percentage change from the previous week's closing
-result_df['% Change'] = ((result_df['This Week\'s End of Week Closing'] - result_df['Previous End of Week Closing']) / result_df['Previous End of Week Closing']) * 100
+result_df['% FTSE100 Change'] = ((result_df['This Week\'s End of Week Closing'] - result_df['Previous End of Week Closing']) / result_df['Previous End of Week Closing']) * 100
 
-# Round up % Change to 2 decimal places
-result_df['% Change'] = result_df['% Change'].apply(lambda x: round(x, 2))
+# Round up % FTSE100 Change to 2 decimal places
+result_df['% FTSE100 Change'] = result_df['% FTSE100 Change'].apply(lambda x: round(x, 2))
 
-# Calculate the previous week's % Change
-result_df['Previous Week % Change'] = result_df['% Change'].shift(1)
+# Calculate the previous week's % FTSE100 Change
+result_df['Previous Week % FTSE100 Change'] = result_df['% FTSE100 Change'].shift(1)
 
 # Keep only relevant Columns
-result_df = result_df[['End of Week Date', '% Change', 'Previous Week % Change']]
+result_df = result_df[['End of Week Date', '% FTSE100 Change', 'Previous Week % FTSE100 Change']]
 
 
 # Drop the first row since it won't have a 'Previous End of Week Closing'

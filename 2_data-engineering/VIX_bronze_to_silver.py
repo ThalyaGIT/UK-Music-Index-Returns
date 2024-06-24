@@ -20,22 +20,10 @@ weekly_df = df['Close'].resample('W-FRI').last()
 # Create a new DataFrame to store the required columns
 result_df = pd.DataFrame()
 result_df['End of Week Date'] = weekly_df.index
-result_df['Close'] = weekly_df.values
-
-# # Shift the 'This Week's End of Week Closing' column to get the 'Previous End of Week Closing'
-# result_df['Previous End of Week Closing'] = result_df['This Week\'s End of Week Closing'].shift(1)
-
-# # Calculate the percentage change from the previous week's closing
-# result_df['% Change'] = ((result_df['This Week\'s End of Week Closing'] - result_df['Previous End of Week Closing']) / result_df['Previous End of Week Closing']) * 100
-
-# # Round up % Change to 2 decimal places
-# result_df['% Change'] = result_df['% Change'].apply(lambda x: round(x, 2))
-
-# # Calculate the previous week's % Change
-# result_df['Previous Week % Change'] = result_df['% Change'].shift(1)
+result_df['Vix Close'] = weekly_df.values
 
 # Keep only relevant Columns
-result_df = result_df[['End of Week Date', 'Close']]
+result_df = result_df[['End of Week Date', 'Vix Close']]
 
 
 # Drop the first row since it won't have a 'Previous End of Week Closing'
