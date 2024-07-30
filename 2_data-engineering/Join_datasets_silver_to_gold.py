@@ -7,7 +7,7 @@ gold_path = os.path.join(os.path.dirname(__file__), '..', '0-data-gold')
                         
 
 # List of CSV files in the 'silver' folder
-csv_files = ['ADS.csv', 'EPU.csv', 'FTSE100.csv', 'MSCI.csv', 'VIX.csv', 'Spotify.csv','COVID.csv']
+csv_files = ['ADS.csv', 'EPU.csv', 'FTSE100.csv', 'MSCI.csv', 'VIX.csv', 'Spotify.csv','COVID.csv','S&P500.csv', 'Cloud.csv']
 
 # Initialize an empty list to store DataFrames
 dfs = []
