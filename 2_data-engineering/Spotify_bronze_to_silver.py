@@ -22,6 +22,7 @@ df['SWAV_lagged'] = df['SWAV'].shift(7)
 # Calculate Change in SWAV
 df['Change in SWAV'] = df['SWAV'] - df['SWAV_lagged']
 
+
 # Select relevant columns
 result_df = df[['Date', 'SWAV', 'SWAV_lagged', 'Change in SWAV']].drop_duplicates(subset=['Date'], keep='last')
 
