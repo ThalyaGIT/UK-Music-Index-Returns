@@ -11,13 +11,21 @@ csv_file = os.path.join(gold_path, 'data.csv')
 df = pd.read_csv(csv_file)
 
 # Ensure the 'End of Week Date' column is in datetime format if necessary
-df['End of Week Date'] = pd.to_datetime(df['End of Week Date'])
+df['Date'] = pd.to_datetime(df['Date'])
 
-# Define the dependent variable
+# # Define the dependent variable
 y = df['% FTSE100 Change']
 
-# Define the independent variables, including 'Change in SWAV' and the other control variables
-X = df[['ADS_Change', 'EPU_Change', 'Previous Week % FTSE100 Change', '% MSCI Change', 'Vix Close', 'Change in SWAV']]
+# # Define the dependent variable #for play play
+#y = df['% S&P500 Change']
+
+# # Define the independent variables, including 'Change in SWAV' and the other control variables
+#X = df[['ADS_Change', 'EPU_Change', 'Previous Week % S&P500 Change', 'Vix Close', 'Change in SWAV']]
+
+
+# # Define the independent variables, including 'Change in SWAV' and the other control variables
+X = df[['ADS_Change', 'EPU_Change', 'Previous Week % FTSE100 Change', '% MSCI Change', 'Vix Close', 'Change in SWAV','DCC']]
+
 
 # Add a constant to the model (intercept)
 X = sm.add_constant(X)
