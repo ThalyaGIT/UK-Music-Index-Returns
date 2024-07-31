@@ -42,5 +42,5 @@ output_file = os.path.join(silver_folder, 'COVID.csv')
 # Save the new DataFrame to a CSV file in the "silver" folder
 df.to_csv(output_file, index=False)
 
-# Display the new DataFrame
-print(df)
+# Display message
+print('Covid Stringency data processed and saved to silver layer')

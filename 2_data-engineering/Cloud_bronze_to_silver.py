@@ -40,4 +40,6 @@ output_file = os.path.join(silver_folder, 'Cloud.csv')
 # Save the new DataFrame to a CSV file in the "silver" folder
 final_data.to_csv(output_file, index=False)
 
+# Display message
+print('Deseasonalized Cloud Cover (DCC) data processed and saved to the silver layer.')
 

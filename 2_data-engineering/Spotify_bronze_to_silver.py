@@ -29,4 +29,4 @@ result_df = df[['Date', 'SWAV', 'SWAV_lagged', 'Change in SWAV']].drop_duplicate
 # Save to CSV
 result_df.to_csv(output_file_path, index=False)
 
-print(f"SWAV with lag and change CSV saved to: {output_file_path}")
+print(f"SWAV with lag and change CSV saved")

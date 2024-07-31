@@ -3,8 +3,7 @@ import os
 
 # Paths
 silver_path = os.path.join(os.path.dirname(__file__), '..', '0-data-silver') 
-gold_path = os.path.join(os.path.dirname(__file__), '..', '0-data-gold')   
-                        
+gold_path = os.path.join(os.path.dirname(__file__), '..', '0-data-gold')                    
 
 # List of CSV files in the 'silver' folder
 csv_files = ['ADS.csv', 'EPU.csv', 'FTSE100.csv', 'MSCI.csv', 'VIX.csv', 'Spotify.csv','COVID.csv','S&P500.csv', 'Cloud.csv']
@@ -28,10 +27,6 @@ merged_df = merged_df.sort_values(by='Date')
 
 # Identify rows with null values
 rows_with_nulls = merged_df[merged_df.isnull().any(axis=1)]
-
-# Display rows with null values
-print("Rows with null values:")
-print(rows_with_nulls)
 
 # Remove rows with null values
 cleaned_df = merged_df.dropna()
