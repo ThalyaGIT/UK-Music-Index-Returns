@@ -5,8 +5,6 @@ from _02_process_data_add_track_id import process_data_add_track_id
 from _03_process_data_list_unique_track_id import process_data_list_unique_track_id 
 from _04_get_data_track_valence import add_valence_column
 from _05_process_data_join_valence import merge_charts_with_valence
-from _06_process_data_avg_valence_by_date import get_avg_valence_by_date
-from _07_join_FTSE100_Spotify import join_ftse100_spotify
 
  # Get the current working directory
 current_directory = os.path.dirname(os.path.abspath(__file__))
@@ -45,13 +43,7 @@ def run_all_ingestion():
     unique_tracks_with_valence = add_valence_column(unique_track_id_file, spotify_client_id, spotify_client_secret)
 
     # Merge valence column with data
-    merged_charts_with_valence = merge_charts_with_valence(unique_tracks_with_valence,processed_data_with_track_id_file)
-
-    # Average Valence by date 
-    avg_valence_by_date = get_avg_valence_by_date(merged_charts_with_valence)
-
-    # Join Spotify FTSE data
-    joined_ftse100_spotify = join_ftse100_spotify(avg_valence_by_date, FTSE_100_filepath)
+    merge_charts_with_valence(unique_tracks_with_valence,processed_data_with_track_id_file)
 
 if __name__ == "__main__":
     run_all_ingestion()
