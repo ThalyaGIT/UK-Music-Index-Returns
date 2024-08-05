@@ -26,8 +26,8 @@ df['ADS_Change'] = df['ADS Index'] - df['Previous ADS Index']
 # Keep only relevant columns
 result_df = df[['ADS Index', 'Previous ADS Index', 'ADS_Change']]
 
-# Drop rows with NaN values (the first 7 rows where lagged data is not available)
-result_df.dropna(inplace=True)
+# # Drop rows with NaN values (the first 7 rows where lagged data is not available)
+# result_df.dropna(inplace=True)
 
 # Reset the index to have a clean DataFrame
 result_df.reset_index(inplace=True)
@@ -39,5 +39,5 @@ output_file = os.path.join(silver_folder, 'ADS.csv')
 # Save the new DataFrame to a CSV file in the "silver" folder
 result_df.to_csv(output_file, index=False)
 
-# Display the new DataFrame
-print(result_df)
+# Display message
+print('Aruoba-Diebold-Scotti Business Conditions (ADS) data processed and saved to silver layer')

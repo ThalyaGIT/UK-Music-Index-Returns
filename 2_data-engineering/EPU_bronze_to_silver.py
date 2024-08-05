@@ -39,5 +39,5 @@ output_file = os.path.join(silver_folder, 'EPU.csv')
 # Save the new DataFrame to a CSV file in the "silver" folder
 result_df.to_csv(output_file, index=False)
 
-# Display the new DataFrame
-print(result_df)
+# Display message
+print('Economic Policy Uncertainty (EPU) data processed and saved to silver layer')

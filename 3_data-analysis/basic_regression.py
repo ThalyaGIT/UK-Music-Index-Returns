@@ -16,15 +16,27 @@ df['Date'] = pd.to_datetime(df['Date'])
 # # Define the dependent variable
 y = df['% FTSE100 Change']
 
-# # Define the dependent variable #for play play
-#y = df['% S&P500 Change']
+# # Define the independent variables, including 'Change in SWAV' and the other control variables
+X = df[['Change in SWAV'                            # Independent Variable: Contemporaneous
+        # , 'ADS_Change'                              # Control 1: Business Conditions
+        # , 'EPU_Change'                              # Control 2 : Economic Policy Uncertainty 
+        # , 'Previous Week % FTSE100 Change'          # Control 3: Previous FTSE10
+        # , '% MSCI Change'                           # Control 4: World Index
+        # , 'Vix Close'                               # Control 5: Volaitlity
+        # , '7D_Rolling_Avg_Change_in_DCC'            # Control 6: Cloud Cover
+        # ,'Stringency_Change'                        # Control 7: Covid Rules Stringency
+        ]]
 
 # # Define the independent variables, including 'Change in SWAV' and the other control variables
-#X = df[['ADS_Change', 'EPU_Change', 'Previous Week % S&P500 Change', 'Vix Close', 'Change in SWAV']]
-
-
-# # Define the independent variables, including 'Change in SWAV' and the other control variables
-X = df[['ADS_Change', 'EPU_Change', 'Previous Week % FTSE100 Change', '% MSCI Change', 'Vix Close', 'Change in SWAV','DCC']]
+# X = df[['Change_in_SWAV_lagged'                            # Independent Variable: Contemporaneous
+#         , 'ADS_Change'                              # Control 1: Business Conditions
+#         , 'EPU_Change'                              # Control 2 : Economic Policy Uncertainty 
+#         , 'Previous Week % FTSE100 Change'          # Control 3: Previous FTSE10
+#         , '% MSCI Change'                           # Control 4: World Index
+#         , 'Vix Close'                               # Control 5: Volaitlity
+#         , '7D_Rolling_Avg_Change_in_DCC'            # Control 6: Cloud Cover
+#         ,'Stringency_Change'                        # Control 7: Covid Rules Stringency
+#         ]]
 
 
 # Add a constant to the model (intercept)

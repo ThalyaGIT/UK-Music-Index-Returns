@@ -19,5 +19,5 @@ output_file = os.path.join(silver_folder, 'VIX.csv')
 # Save the modified DataFrame to a CSV file in the "silver" folder
 df.to_csv(output_file, index=False)
 
-# Display the modified DataFrame (optional)
-print(df)
+# Display message
+print('MSCI World Index data processed and saved to silver layer')
