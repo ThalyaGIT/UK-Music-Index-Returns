@@ -36,7 +36,7 @@ data['7D_Rolling_Avg_Change_in_DCC'] = data['Change_in_DCC'].rolling(window=7, m
 # Select relevant columns to save
 #final_data = data[['Date','Cloud_Cover','7D_Rolling_Avg_Cloud_Cover','DCC','Previous_Day_DCC','Change_in_DCC', '7D_Rolling_Avg_Change_in_DCC']].drop_duplicates()
 
-final_data = data[['Date', '7D_Rolling_Avg_Change_in_DCC']].drop_duplicates()
+final_data = data[['Date','Cloud_Cover','7D_Rolling_Avg_Cloud_Cover','DCC', 'Previous_Day_DCC','Change_in_DCC', '7D_Rolling_Avg_Change_in_DCC']].drop_duplicates()
 
 # Define the path to save the new CSV file in the "silver" folder
 silver_folder = os.path.join(os.path.dirname(__file__), '..', '0-data-silver')

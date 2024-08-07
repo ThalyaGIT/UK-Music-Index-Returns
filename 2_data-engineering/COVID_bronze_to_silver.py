@@ -11,11 +11,24 @@ df = pd.read_csv(csv_file)
 # Convert 'Date' column to datetime format
 df['Date'] = pd.to_datetime(df['Date'], format='%Y%m%d')
 
-# Filter on data
+# Filter on data for GB
 df = df[df['CountryCode'] == 'GBR']
 
+# Filter on data for all regions
+df = df[df['RegionCode'].isna()]
+
 # Keep Columns you need
-df = df[['Date', 'StringencyIndex_Average']]
+df = df[['Date'
+         , 'C1M_School closing'
+         , 'C2M_Workplace closing'
+         , 'C3M_Cancel public events'
+         , 'C4M_Restrictions on gatherings'
+         , 'C5M_Close public transport'
+         , 'C6M_Stay at home requirements'
+         ]]
+
+df['Covid_Stringency'] = df.iloc[:, 1:].sum(axis=1)
+
 
 # Sort the DataFrame by date if it's not already sorted
 df = df.sort_values(by='Date')
@@ -24,10 +37,18 @@ df = df.sort_values(by='Date')
 df.set_index('Date', inplace=True)
 
 # Shift the 'ADS Index' column to get the lagged data
-df['Previous Stringency'] = df['StringencyIndex_Average'].shift(7)
+df['Last_Week_Covid_Stringency'] = df['Covid_Stringency'].shift(7)
 
 # Calculate the ADS_Change from the previous week's closing
-df['Stringency_Change'] = df['StringencyIndex_Average'] - df['Previous Stringency']
+df['Stringency_Change'] = df['Covid_Stringency'] - df['Last_Week_Covid_Stringency']
+
+# Calculate the ADS_Change from the previous week's closing
+df = df[['Stringency_Change'
+         , 'Covid_Stringency'
+         , 'Last_Week_Covid_Stringency'
+         ]]
+
+
 
 # Drop rows with NaN values (the first 7 rows where lagged data is not available)
 df.dropna(inplace=True)
