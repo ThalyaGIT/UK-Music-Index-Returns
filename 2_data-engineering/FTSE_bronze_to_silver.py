@@ -28,8 +28,12 @@ df['% FTSE100 Change'] = df['% FTSE100 Change'].round(2)
 
 df['Previous Week % FTSE100 Change'] = df['% FTSE100 Change'].shift(7)
 
+df['Next Week % FTSE100 Change'] = df['% FTSE100 Change'].shift(-7)
+
 # Keep only relevant columns
-result_df = df[['Price', 'Previous Week Price', '% FTSE100 Change', 'Previous Week % FTSE100 Change']]
+result_df = df[['Price', 'Previous Week Price', '% FTSE100 Change', 'Previous Week % FTSE100 Change', 'Next Week % FTSE100 Change']]
+
+print(result_df.head(10))
 
 # Drop rows with NaN values (first 7 rows will have NaN for 'Previous Week Price')
 result_df.dropna(inplace=True)
