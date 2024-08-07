@@ -5,6 +5,12 @@ import os
 data_folder = os.path.join(os.path.dirname(__file__), '..', '0_data-bronze')
 csv_file = os.path.join(data_folder, 'downloaded_Cloud.csv')
 
+# prepare dates that exist in ftse 
+ftse_file = os.path.join(data_folder, 'downloaded_FTSE100.csv')
+ftse = pd.read_csv(ftse_file)
+ftse['Date'] = pd.to_datetime(ftse['date'])
+ftse.set_index('Date', inplace=True)
+
 # Load your cloud cover data
 data  = pd.read_csv(csv_file)
 
@@ -18,6 +24,9 @@ filtered_data = data[(data['Time'] >= '08:00:00') & (data['Time'] <= '17:00:00')
 # First , get the DCC!
 # Calculate the daily average cloud cover
 data = filtered_data.groupby('Date', as_index=False)['Cloud_Cover'].mean()
+
+# Filter df to only include rows where the 'Date' is in ftse's index
+data = data[data['Date'].isin(ftse.index)]
 
 # Calculate the Rolling-7-days-Average-Cloud-Cover
 data['7D_Rolling_Avg_Cloud_Cover'] = data['Cloud_Cover'].rolling(window=7, min_periods=1).mean()

@@ -5,11 +5,20 @@ import os
 data_folder = os.path.join(os.path.dirname(__file__), '..', '0_data-bronze')
 csv_file = os.path.join(data_folder, 'downloaded_COVID.csv')
 
+# prepare dates that exist in ftse 
+ftse_file = os.path.join(data_folder, 'downloaded_FTSE100.csv')
+ftse = pd.read_csv(ftse_file)
+ftse['Date'] = pd.to_datetime(ftse['date'])
+ftse.set_index('Date', inplace=True)
+
 # Load the CSV file into a pandas DataFrame
 df = pd.read_csv(csv_file)
 
 # Convert 'Date' column to datetime format
 df['Date'] = pd.to_datetime(df['Date'], format='%Y%m%d')
+
+# Filter df to only include rows where the 'Date' is in ftse's index
+df = df[df['Date'].isin(ftse.index)]
 
 # Filter on data for GB
 df = df[df['CountryCode'] == 'GBR']
@@ -29,7 +38,6 @@ df = df[['Date'
 
 df['Covid_Stringency'] = df.iloc[:, 1:].sum(axis=1)
 
-
 # Sort the DataFrame by date if it's not already sorted
 df = df.sort_values(by='Date')
 
@@ -48,6 +56,12 @@ df = df[['Stringency_Change'
          , 'Last_Week_Covid_Stringency'
          ]]
 
+
+# Reindex the df to have all dates present in the FTSE100 DataFrame
+df = df.reindex(ftse.index)
+
+# Fill missing values with 0
+df = df.fillna(0)
 
 
 # Drop rows with NaN values (the first 7 rows where lagged data is not available)

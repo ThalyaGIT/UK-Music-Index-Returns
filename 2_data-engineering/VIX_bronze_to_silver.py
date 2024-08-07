@@ -5,8 +5,20 @@ import os
 data_folder = os.path.join(os.path.dirname(__file__), '..', '0_data-bronze')
 csv_file = os.path.join(data_folder, 'downloaded_VIX.csv')
 
+# prepare dates that exist in ftse 
+ftse_file = os.path.join(data_folder, 'downloaded_FTSE100.csv')
+ftse = pd.read_csv(ftse_file)
+ftse['Date'] = pd.to_datetime(ftse['date'])
+ftse.set_index('Date', inplace=True)
+
 # Load the CSV file into a pandas DataFrame
 df = pd.read_csv(csv_file)
+
+# Ensure the date column is in datetime format
+df['Date'] = pd.to_datetime(df['Date'])
+
+# Filter df to only include rows where the 'Date' is in ftse's index
+df = df[df['Date'].isin(ftse.index)]
 
 # Drop columns 'Open', 'High', and 'Low' if they exist
 columns_to_drop = ['Open', 'High', 'Low']
