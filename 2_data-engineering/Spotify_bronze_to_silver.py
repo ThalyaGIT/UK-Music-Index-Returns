@@ -1,34 +1,46 @@
 import pandas as pd
 import os
 
-# Paths
+# Input Path and CSV File
 data_folder = os.path.join(os.path.dirname(__file__), '..', '0_data-bronze')
-input_file_path  = os.path.join(data_folder, 'ingested_Spotify_5.csv')
+input_file_path = os.path.join(data_folder, 'ingested_Spotify_5.csv')
 
+# Output Path and CSV File
 silver_folder = os.path.join(os.path.dirname(__file__), '..', '0-data-silver')
 output_file_path = os.path.join(silver_folder, 'Spotify.csv')
 
-# Read the CSV file
+# Read the Input CSV file
 df = pd.read_csv(input_file_path)
 
-# Ensure the 'date' column is in datetime format
-df['date'] = pd.to_datetime(df['date'])
+# Ensure the date column is in datetime format
+df['Date'] = pd.to_datetime(df['date'])
 
-# Create a new column for the end of week date set to Friday
-df['End of Week Date'] = df['date'] + pd.offsets.Week(weekday=4)  # Set to the last day (Friday) of the week
+# Sort the DataFrame by date if it's not already sorted
+df = df.sort_values(by='Date')
 
-# Group by 'End of Week Date' and calculate SWAV
-weekly_swav = df.groupby('End of Week Date').apply(lambda x: pd.Series({
-    'SWAV': (x['streams'] * x['Valence']).sum() / x['streams'].sum()
-})).reset_index()
+# Set the date column as the index
+df.set_index('Date', inplace=True)
 
-# Calculate Change in SWAV compared to the previous week
-weekly_swav['Change in SWAV'] = weekly_swav['SWAV'].diff()
+# Group by date and calculate SWAV
+df = df.groupby('Date').apply(lambda x: (x['streams'] * x['Valence']).sum() / x['streams'].sum()).reset_index(name='SWAV')
 
-# Keep only relevant Columns
-weekly_swav = weekly_swav[['End of Week Date', 'Change in SWAV']]
+# Ensure 'Date' is a datetime column
+df['Date'] = pd.to_datetime(df['Date'])
 
-# Save the result to a new CSV file
-weekly_swav.to_csv(output_file_path, index=False)
+# Set the date column as the index again
+df.set_index('Date', inplace=True)
 
-print(f"Weekly SWAV CSV saved to: {output_file_path}")
+# Shift the 'Price' column to get the lagged data
+df['SWAV_lagged'] = df['SWAV'].shift(7)
+
+# Calculate Change in SWAV
+df['Change in SWAV'] = df['SWAV'] - df['SWAV_lagged']
+
+# Select only relevant columns
+result_df = df[['SWAV', 'SWAV_lagged', 'Change in SWAV']].reset_index()
+
+# Save to the output CSV and path.
+result_df.to_csv(output_file_path, index=False)
+
+# Print Success message
+print(f"Spotify Silver CSV saved successfully")
