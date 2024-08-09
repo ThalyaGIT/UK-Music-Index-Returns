@@ -28,10 +28,8 @@ df['% FTSE250 Change'] = df['% FTSE250 Change'].round(2)
 
 df['Previous Week % FTSE250 Change'] = df['% FTSE250 Change'].shift(7)
 
-df['Next Week % FTSE250 Change'] = df['% FTSE250 Change'].shift(-7)
-
 # Keep only relevant columns
-result_df = df[['% FTSE250 Change']]
+result_df = df[['% FTSE250 Change', 'Previous Week % FTSE250 Change']]
 
 print(result_df.head(10))
 
