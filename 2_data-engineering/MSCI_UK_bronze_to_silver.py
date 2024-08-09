@@ -26,8 +26,10 @@ df['% MSCIUK Change'] = ((df['Price'] - df['Previous Week Price']) / df['Previou
 # Round up % FTSEAllShare Change to 2 decimal places
 df['% MSCIUK Change'] = df['% MSCIUK Change'].round(2)
 
+df['Previous Week % MSCIUK Change'] = df['% MSCIUK Change'].shift(7)
+
 # Keep only relevant columns
-result_df = df[['% MSCIUK Change']]
+result_df = df[['% MSCIUK Change', 'Previous Week % MSCIUK Change']]
 
 print(result_df.head(10))
 

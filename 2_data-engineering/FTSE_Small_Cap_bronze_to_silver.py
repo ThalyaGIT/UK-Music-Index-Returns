@@ -26,8 +26,10 @@ df['% FTSESmallCap Change'] = ((df['Price'] - df['Previous Week Price']) / df['P
 # Round up % FTSEAllShare Change to 2 decimal places
 df['% FTSESmallCap Change'] = df['% FTSESmallCap Change'].round(2)
 
+df['Previous Week % FTSESmallCap Change'] = df['% FTSESmallCap Change'].shift(7)
+
 # Keep only relevant columns
-result_df = df[['% FTSESmallCap Change']]
+result_df = df[['% FTSESmallCap Change', 'Previous Week % FTSESmallCap Change']]
 
 print(result_df.head(10))
 
