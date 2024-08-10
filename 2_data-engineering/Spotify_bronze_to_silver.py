@@ -1,6 +1,10 @@
 import pandas as pd
 import os
 
+shift = 5
+# shift = 7
+
+
 # Input Path and CSV File
 data_folder = os.path.join(os.path.dirname(__file__), '..', '0_data-bronze')
 input_file_path = os.path.join(data_folder, 'ingested_Spotify_5.csv')
@@ -31,7 +35,7 @@ df['Date'] = pd.to_datetime(df['Date'])
 df.set_index('Date', inplace=True)
 
 # Shift the 'Price' column to get the lagged data
-df['SWAV_lagged'] = df['SWAV'].shift(7)
+df['SWAV_lagged'] = df['SWAV'].shift(shift)
 
 # Calculate Change in SWAV
 df['Change in SWAV'] = df['SWAV'] - df['SWAV_lagged']
