@@ -1,6 +1,9 @@
 import pandas as pd
 import os
 
+shift = 5
+# shift = 7
+
 # Define the path to the CSV file
 data_folder = os.path.join(os.path.dirname(__file__), '..', '0_data-bronze')
 csv_file = os.path.join(data_folder, 'downloaded_COVID.csv')
@@ -45,7 +48,7 @@ df = df.sort_values(by='Date')
 df.set_index('Date', inplace=True)
 
 # Shift the 'ADS Index' column to get the lagged data
-df['Last_Week_Covid_Stringency'] = df['Covid_Stringency'].shift(7)
+df['Last_Week_Covid_Stringency'] = df['Covid_Stringency'].shift(shift)
 
 # Calculate the ADS_Change from the previous week's closing
 df['Stringency_Change'] = df['Covid_Stringency'] - df['Last_Week_Covid_Stringency']

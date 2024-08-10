@@ -1,6 +1,9 @@
 import pandas as pd
 import os
 
+shift = 5
+# shift = 7
+
 # Define the path to the CSV file
 data_folder = os.path.join(os.path.dirname(__file__), '..', '0_data-bronze')
 csv_file = os.path.join(data_folder, 'downloaded_MSCI.csv')
@@ -28,7 +31,7 @@ df.set_index('Date', inplace=True)
 
 
 # Shift the 'Price' column to get the lagged data
-df['MSCI Previous Week Price'] = df['Price'].shift(7)
+df['MSCI Previous Week Price'] = df['Price'].shift(shift)
 
 # Calculate the percentage change from the previous week's closing
 df['% MSCI Change'] = ((df['Price'] - df['MSCI Previous Week Price']) / df['MSCI Previous Week Price']) * 100
@@ -36,7 +39,7 @@ df['% MSCI Change'] = ((df['Price'] - df['MSCI Previous Week Price']) / df['MSCI
 # Round up % FTSE100 Change to 2 decimal places
 df['% MSCI Change'] = df['% MSCI Change'].round(2)
 
-df['Previous Week % MSCI Change'] = df['% MSCI Change'].shift(7)
+df['Previous Week % MSCI Change'] = df['% MSCI Change'].shift(shift)
 
 # Keep only relevant columns
 result_df = df[['Price', 'MSCI Previous Week Price', 'Previous Week % MSCI Change', '% MSCI Change']]

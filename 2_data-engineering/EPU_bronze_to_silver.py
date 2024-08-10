@@ -1,6 +1,9 @@
 import pandas as pd
 import os
 
+shift = 5
+# shift = 7
+
 # Define the path to the CSV file
 data_folder = os.path.join(os.path.dirname(__file__), '..', '0_data-bronze')
 csv_file = os.path.join(data_folder, 'downloaded_EPU.csv')
@@ -27,7 +30,7 @@ df = df[df['Date'].isin(ftse.index)]
 df.set_index('Date', inplace=True)
 
 # Shift the 'EPU Index' column to get the lagged data
-df['Previous EPU Index'] = df['EPU Index'].shift(7)
+df['Previous EPU Index'] = df['EPU Index'].shift(shift)
 
 # Calculate the EPU_Change from the previous week's closing
 df['EPU_Change'] = df['EPU Index'] - df['Previous EPU Index']

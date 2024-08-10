@@ -1,6 +1,9 @@
 import pandas as pd
 import os
 
+shift = 5
+# shift = 7
+
 # Define the path to the CSV file
 data_folder = os.path.join(os.path.dirname(__file__), '..', '0_data-bronze')
 csv_file = os.path.join(data_folder, 'downloaded_FTSE_All_Share.csv')
@@ -18,7 +21,7 @@ df = df.sort_values(by='Date')
 df.set_index('Date', inplace=True)
 
 # Shift the 'Price' column to get the lagged data
-df['Previous Week Price'] = df['Price'].shift(7)
+df['Previous Week Price'] = df['Price'].shift(shift)
 
 # Calculate the percentage change from the previous week's closing
 df['% FTSEAllShare Change'] = ((df['Price'] - df['Previous Week Price']) / df['Previous Week Price']) * 100
@@ -26,7 +29,7 @@ df['% FTSEAllShare Change'] = ((df['Price'] - df['Previous Week Price']) / df['P
 # Round up % FTSEAllShare Change to 2 decimal places
 df['% FTSEAllShare Change'] = df['% FTSEAllShare Change'].round(2)
 
-df['Previous Week % FTSEAllShare Change'] = df['% FTSEAllShare Change'].shift(7)
+df['Previous Week % FTSEAllShare Change'] = df['% FTSEAllShare Change'].shift(shift)
 
 # Keep only relevant columns
 result_df = df[['% FTSEAllShare Change', 'Previous Week % FTSEAllShare Change']]

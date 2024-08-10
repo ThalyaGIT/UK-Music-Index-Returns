@@ -1,6 +1,9 @@
 import pandas as pd
 import os
 
+shift = 5
+# shift = 7
+
 # Define the path to the CSV file
 data_folder = os.path.join(os.path.dirname(__file__), '..', '0_data-bronze')
 csv_file = os.path.join(data_folder, 'downloaded_Cloud.csv')
@@ -29,7 +32,7 @@ data = filtered_data.groupby('Date', as_index=False)['Cloud_Cover'].mean()
 data = data[data['Date'].isin(ftse.index)]
 
 # Calculate the Rolling-7-days-Average-Cloud-Cover
-data['7D_Rolling_Avg_Cloud_Cover'] = data['Cloud_Cover'].rolling(window=7, min_periods=1).mean()
+data['7D_Rolling_Avg_Cloud_Cover'] = data['Cloud_Cover'].rolling(window=shift, min_periods=1).mean()
 
 # Deseasonalize the cloud cover by substracting Rolling-7-days-Average-Cloud-Cover
 data['DCC'] = data['Cloud_Cover'] - data['7D_Rolling_Avg_Cloud_Cover'] 
@@ -40,7 +43,7 @@ data['Previous_Day_DCC'] = data['DCC'].shift(1)
 data['Change_in_DCC'] = data['DCC']- data['Previous_Day_DCC']
 
 # Calculate the average change in DCC for the past seven dats
-data['7D_Rolling_Avg_Change_in_DCC'] = data['Change_in_DCC'].rolling(window=7, min_periods=1).mean()
+data['7D_Rolling_Avg_Change_in_DCC'] = data['Change_in_DCC'].rolling(window=shift, min_periods=1).mean()
 
 # Select relevant columns to save
 #final_data = data[['Date','Cloud_Cover','7D_Rolling_Avg_Cloud_Cover','DCC','Previous_Day_DCC','Change_in_DCC', '7D_Rolling_Avg_Change_in_DCC']].drop_duplicates()
