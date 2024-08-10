@@ -14,6 +14,12 @@ df = pd.read_csv(csv_file)
 # Ensure the date column is in datetime format
 df['Date'] = pd.to_datetime(df['date'])
 
+# Step 3: Check the data type again after conversion
+print("Data type after conversion:", df['Date'].dtype)
+
+# Create a 'Month' column by extracting the month from the 'date' column
+df['Month'] = df['Date'].dt.month
+
 # Sort the DataFrame by date if it's not already sorted
 df = df.sort_values(by='Date')
 
@@ -33,8 +39,9 @@ df['Previous Week % FTSE100 Change'] = df['% FTSE100 Change'].shift(shift)
 
 df['Next Week % FTSE100 Change'] = df['% FTSE100 Change'].shift(-shift)
 
+
 # Keep only relevant columns
-result_df = df[['Price', 'Previous Week Price', '% FTSE100 Change', 'Previous Week % FTSE100 Change', 'Next Week % FTSE100 Change']]
+result_df = df[['Month', 'Price', 'Previous Week Price', '% FTSE100 Change', 'Previous Week % FTSE100 Change', 'Next Week % FTSE100 Change']]
 
 print(result_df.head(10))
 
