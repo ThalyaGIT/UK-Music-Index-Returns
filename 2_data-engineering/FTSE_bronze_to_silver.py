@@ -26,11 +26,19 @@ df = df.sort_values(by='Date')
 # Set the date column as the index
 df.set_index('Date', inplace=True)
 
+df['Vol.'] = df['Vol.'].apply(lambda x: float(x.replace('M', '').replace('B', '')) * (1_000_000 if 'M' in x else 1_000_000_000))
+
 # Shift the 'Price' column to get the lagged data
 df['Previous Week Price'] = df['Price'].shift(shift)
 
+# Shift the 'Price' column to get the lagged data
+df['Previous Week Vol'] = df['Vol.'].shift(shift)
+
 # Calculate the percentage change from the previous week's closing
 df['% FTSE100 Change'] = ((df['Price'] - df['Previous Week Price']) / df['Previous Week Price']) * 100
+
+# Calculate the percentage change from the previous week's closing
+df['% Vol Change'] = ((df['Vol.'] - df['Previous Week Vol']) / df['Previous Week Vol']) * 100
 
 # Round up % FTSE100 Change to 2 decimal places
 df['% FTSE100 Change'] = df['% FTSE100 Change'].round(2)
@@ -41,7 +49,7 @@ df['Next Week % FTSE100 Change'] = df['% FTSE100 Change'].shift(-shift)
 
 
 # Keep only relevant columns
-result_df = df[['Month', 'Price', 'Previous Week Price', '% FTSE100 Change', 'Previous Week % FTSE100 Change', 'Next Week % FTSE100 Change']]
+result_df = df[['Month', 'Price', 'Previous Week Price', '% FTSE100 Change', 'Previous Week % FTSE100 Change', 'Next Week % FTSE100 Change','% Vol Change']]
 
 print(result_df.head(10))
 
