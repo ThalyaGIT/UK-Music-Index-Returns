@@ -14,6 +14,7 @@ csv_files = [  'ADS.csv'
              , 'Spotify.csv'
              , 'COVID.csv'
              , 'Cloud.csv'
+             , 'GILT2.csv'
              ]
 
 # Initialize an empty list to store DataFrames
