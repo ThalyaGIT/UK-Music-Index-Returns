@@ -1,8 +1,8 @@
 import pandas as pd
 import os
 
-shift = 5
-# shift = 7
+#shift = 5
+shift = 7
 
 # Define the path to the CSV file
 data_folder = os.path.join(os.path.dirname(__file__), '..', '0_data-bronze')
