@@ -23,7 +23,7 @@ def main(days, bronze_data_folder, silver_data_folder):
                 , 'MSCIUK.csv'
                 , 'GILT2.csv'
                 , 'VIX.csv'
-                , 'TED.csv'
+                #, 'TED.csv'
                 , 'Spotify.csv'
                 ]
 
