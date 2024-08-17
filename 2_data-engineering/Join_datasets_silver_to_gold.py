@@ -20,6 +20,7 @@ csv_files = [  'ADS.csv'
             , 'MSCIUK.csv'
              , 'GILT2.csv'
              ,'FTSEAIM.csv'
+             ,'TED.csv'
              ]
 
 # Initialize an empty list to store DataFrames
