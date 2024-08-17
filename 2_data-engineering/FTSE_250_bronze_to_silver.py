@@ -1,50 +1,65 @@
 import pandas as pd
 import os
+import sys
 
-# Define the path to the CSV file
-data_folder = os.path.join(os.path.dirname(__file__), '..', '0_data-bronze')
-csv_file = os.path.join(data_folder, 'downloaded_FTSE250.csv')
 
-# Load the CSV file into a pandas DataFrame
-df = pd.read_csv(csv_file)
+def main(days, bronze_data_folder, silver_data_folder):   
 
-# Ensure the date column is in datetime format
-df['Date'] = pd.to_datetime(df['Date'])
+    days = int(days)
+        
+    # Define the path to the CSV file
+    FTS250_file = os.path.join(bronze_data_folder, 'downloaded_FTSE250.csv')
 
-# Sort the DataFrame by date if it's not already sorted
-df = df.sort_values(by='Date')
+    # Load the CSV file into a pandas DataFrame
+    df = pd.read_csv(FTS250_file)
 
-# Set the date column as the index
-df.set_index('Date', inplace=True)
+    # Ensure the date column is in datetime format
+    df['Date'] = pd.to_datetime(df['Date'], dayfirst=True)
 
-# Shift the 'Price' column to get the lagged data
-df['Previous Week Price'] = df['Price'].shift(7)
+    # Sort the DataFrame by date if it's not already sorted
+    df = df.sort_values(by='Date')
 
-# Calculate the percentage change from the previous week's closing
-df['% FTSE250 Change'] = ((df['Price'] - df['Previous Week Price']) / df['Previous Week Price']) * 100
+    # Set the date column as the index
+    df.set_index('Date', inplace=True)
 
-# Round up % FTSE250 Change to 2 decimal places
-df['% FTSE250 Change'] = df['% FTSE250 Change'].round(2)
+    # Shift the 'Price' column to get the lagged data
+    df['Previous Price'] = df['Price'].shift(days)
 
-df['Previous Week % FTSE250 Change'] = df['% FTSE250 Change'].shift(7)
+    # Calculate the percentage change from the previous week's closing
+    df['% FTSE250 Change'] = ((df['Price'] - df['Previous Price']) / df['Previous Price']) * 100
 
-# Keep only relevant columns
-result_df = df[['% FTSE250 Change', 'Previous Week % FTSE250 Change']]
+    # Round up % FTSE250 Change to 2 decimal places
+    df['% FTSE250 Change'] = df['% FTSE250 Change'].round(2)
 
-print(result_df.head(10))
+    df['Previous % FTSE250 Change'] = df['% FTSE250 Change'].shift(days)
 
-# Drop rows with NaN values (first 7 rows will have NaN for 'Previous Week Price')
-result_df.dropna(inplace=True)
+    df['Next % FTSE250 Change'] = df['% FTSE250 Change'].shift(-days)
 
-# Reset the index to have a clean DataFrame
-result_df.reset_index(inplace=True)
+    # Keep only relevant columns
+    result_df = df[['% FTSE250 Change', 'Previous % FTSE250 Change', 'Next % FTSE250 Change']]
 
-# Define the path to save the new CSV file in the "silver" folder
-silver_folder = os.path.join(os.path.dirname(__file__), '..', '0-data-silver')
-output_file = os.path.join(silver_folder, 'FTSE250.csv')
+    # Drop rows with NaN values 
+    result_df = result_df.copy()
+    result_df.dropna(inplace=True)
 
-# Save the new DataFrame to a CSV file in the "silver" folder
-result_df.to_csv(output_file, index=False)
+    # Reset the index to have a clean DataFrame
+    result_df.reset_index(inplace=True)
 
-# Display message
-print('FTSE 250 data processed and saved to silver layer')
+    # Define the path to save the new CSV file in the "silver" folder
+    silver_data_folder = os.path.join(os.path.dirname(__file__), '..', '0-data-silver')
+    output_file = os.path.join(silver_data_folder, 'FTSE250.csv')
+
+    # Save the new DataFrame to a CSV file in the "silver" folder
+    result_df.to_csv(output_file, index=False)
+
+    # Display message
+    print('___FTSE 250 data processed and saved to silver layer')
+    
+if __name__ == "__main__":
+    if len(sys.argv) > 2:
+        param1 = sys.argv[1]
+        bronze_data_folder = sys.argv[2]
+        silver_data_folder = sys.argv[3]
+        main(param1, bronze_data_folder , silver_data_folder)
+    else:
+        print("No parameters provided.")

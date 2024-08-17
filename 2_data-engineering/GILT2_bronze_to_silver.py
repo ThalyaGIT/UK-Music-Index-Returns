@@ -1,61 +1,65 @@
 import pandas as pd
 import os
+import sys
 
-#shift = 5
-shift = 7
 
-# Define the path to the CSV file
-data_folder = os.path.join(os.path.dirname(__file__), '..', '0_data-bronze')
-csv_file = os.path.join(data_folder, 'downloaded_GILT2.csv')
+def main(days, bronze_data_folder, silver_data_folder):   
 
-# Load the CSV file into a pandas DataFrame
-df = pd.read_csv(csv_file)
+    days = int(days)
+        
+    # Define the path to the CSV file
+    GILT2_file = os.path.join(bronze_data_folder, 'downloaded_GILT2.csv')
 
-# Ensure the date column is in datetime format
-df['Date'] = pd.to_datetime(df['Date'])
+    # Load the CSV file into a pandas DataFrame
+    df = pd.read_csv(GILT2_file)
 
-# Step 3: Check the data type again after conversion
-print("Data type after conversion:", df['Date'].dtype)
+    # Ensure the date column is in datetime format
+    df['Date'] = pd.to_datetime(df['Date'], dayfirst=True)
 
-# Create a 'Month' column by extracting the month from the 'date' column
-df['Month'] = df['Date'].dt.month
+    # Sort the DataFrame by date if it's not already sorted
+    df = df.sort_values(by='Date')
 
-# Sort the DataFrame by date if it's not already sorted
-df = df.sort_values(by='Date')
+    # Set the date column as the index
+    df.set_index('Date', inplace=True)
 
-# Set the date column as the index
-df.set_index('Date', inplace=True)
+    # Shift the 'Price' column to get the lagged data
+    df['Previous Price'] = df['Price'].shift(days)
 
-# Shift the 'Price' column to get the lagged data
-df['Previous Week Price'] = df['Price'].shift(shift)
+    # Calculate the percentage change from the previous week's closing
+    df['% GILT2 Change'] = ((df['Price'] - df['Previous Price']) / df['Previous Price']) * 100
 
-# Calculate the percentage change from the previous week's closing
-df['% GILT2 Change'] = ((df['Price'] - df['Previous Week Price']) / df['Previous Week Price']) * 100
+    # Round up % GILT2 Change to 2 decimal places
+    df['% GILT2 Change'] = df['% GILT2 Change'].round(2)
 
-# Round up % GILT2 Change to 2 decimal places
-df['% GILT2 Change'] = df['% GILT2 Change'].round(2)
+    df['Previous % GILT2 Change'] = df['% GILT2 Change'].shift(days)
 
-df['Previous Week % GILT2 Change'] = df['% GILT2 Change'].shift(shift)
+    df['Next % GILT2 Change'] = df['% GILT2 Change'].shift(-days)
 
-df['Next Week % GILT2 Change'] = df['% GILT2 Change'].shift(-shift)
+    # Keep only relevant columns
+    result_df = df[['% GILT2 Change', 'Previous % GILT2 Change', 'Next % GILT2 Change']]
 
-# Keep only relevant columns
-result_df = df[['Month', 'Price', 'Previous Week Price', '% GILT2 Change', 'Previous Week % GILT2 Change', 'Next Week % GILT2 Change']]
+    # Drop rows with NaN values 
+    result_df = result_df.copy()
+    result_df.dropna(inplace=True)
 
-print(result_df.head(10))
+    # Reset the index to have a clean DataFrame
+    result_df.reset_index(inplace=True)
 
-# Drop rows with NaN values (first 7 rows will have NaN for 'Previous Week Price')
-result_df.dropna(inplace=True)
+    # Define the path to save the new CSV file in the "silver" folder
+    silver_data_folder = os.path.join(os.path.dirname(__file__), '..', '0-data-silver')
+    output_file = os.path.join(silver_data_folder, 'GILT2.csv')
 
-# Reset the index to have a clean DataFrame
-result_df.reset_index(inplace=True)
+    # Save the new DataFrame to a CSV file in the "silver" folder
+    result_df.to_csv(output_file, index=False)
 
-# Define the path to save the new CSV file in the "silver" folder
-silver_folder = os.path.join(os.path.dirname(__file__), '..', '0-data-silver')
-output_file = os.path.join(silver_folder, 'GILT2.csv')
-
-# Save the new DataFrame to a CSV file in the "silver" folder
-result_df.to_csv(output_file, index=False)
-
-# Display message
-print('GILT2 data processed and saved to silver layer')
+    # Display message
+    print('___GILT2 data processed and saved to silver layer')
+    
+if __name__ == "__main__":
+    if len(sys.argv) > 2:
+        param1 = sys.argv[1]
+        bronze_data_folder = sys.argv[2]
+        silver_data_folder = sys.argv[3]
+        main(param1, bronze_data_folder , silver_data_folder)
+    else:
+        print("No parameters provided.")

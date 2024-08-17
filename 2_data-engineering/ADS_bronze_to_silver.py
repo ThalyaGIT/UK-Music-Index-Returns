@@ -1,52 +1,51 @@
 import pandas as pd
 import os
+import sys
 
-# Define the path to the CSV file
-data_folder = os.path.join(os.path.dirname(__file__), '..', '0_data-bronze')
-csv_file = os.path.join(data_folder, 'downloaded_ADS.csv')
+def main(days, bronze_data_folder, silver_data_folder):   
 
-# prepare dates that exist in ftse 
-ftse_file = os.path.join(data_folder, 'downloaded_FTSE100.csv')
-ftse = pd.read_csv(ftse_file)
-ftse['Date'] = pd.to_datetime(ftse['date'])
-ftse.set_index('Date', inplace=True)
+    days = int(days)
 
-# Load the CSV file into a pandas DataFrame
-df = pd.read_csv(csv_file)
+    # Prepare Dates that only exist in FTSE 100
+    FTSE_file = os.path.join(bronze_data_folder, 'downloaded_FTSE100.csv')
+    FTSE = pd.read_csv(FTSE_file)
+    FTSE['Date'] = pd.to_datetime(FTSE['date'], dayfirst=True)
+    FTSE.set_index('Date', inplace=True)
 
-# Ensure the date column is in datetime format
-df['Date'] = pd.to_datetime(df['Date'])
+    # Load the ADS data into a pandas DataFrame       
+    ADS_file = os.path.join(bronze_data_folder, 'downloaded_ADS.csv')
+    df = pd.read_csv(ADS_file)
 
-# Sort the DataFrame by date if it's not already sorted
-df = df.sort_values(by='Date')
+    # Ensure the Date column is in datetime format
+    df['Date'] = pd.to_datetime(df['Date'], format="%Y-%m-%d")
+    df = df.sort_values(by='Date')
 
-# Filter df to only include rows where the 'Date' is in df1's index
-df = df[df['Date'].isin(ftse.index)]
+    # Filter df to only include rows where the 'Date' is in FTSE 100 index
+    df = df[df['Date'].isin(FTSE.index)]
 
-# Set the date column as the index
-df.set_index('Date', inplace=True)
+    df.set_index('Date', inplace=True)
 
-# Shift the 'ADS Index' column to get the lagged data
-df['Previous ADS Index'] = df['ADS Index'].shift(7)
+    # Shift the 'ADS Index' column to get the lagged data
+    df['Previous ADS Index'] = df['ADS Index'].shift(days)
 
-# Calculate the ADS_Change from the previous week's closing
-df['ADS_Change'] = df['ADS Index'] - df['Previous ADS Index']
+    # Calculate the ADS_Change
+    df['ADS_Change'] = df['ADS Index'] - df['Previous ADS Index']
 
-# Keep only relevant columns
-result_df = df[['ADS Index', 'Previous ADS Index', 'ADS_Change']]
+    # Save DF into Silver Data CSV
+    result_df = df[['ADS_Change']]
+    result_df = result_df.copy()
+    result_df.dropna(inplace=True)
+    result_df.reset_index(inplace=True)
+    silver_data = os.path.join(silver_data_folder, 'ADS.csv')
+    result_df.to_csv(silver_data, index=False)
 
-# Drop rows with NaN values (the first 7 rows where lagged data is not available)
-result_df.dropna(inplace=True)
+    print('____ADS data processed and saved to silver layer')
 
-# Reset the index to have a clean DataFrame
-result_df.reset_index(inplace=True)
-
-# Define the path to save the new CSV file in the "silver" folder
-silver_folder = os.path.join(os.path.dirname(__file__), '..', '0-data-silver')
-output_file = os.path.join(silver_folder, 'ADS.csv')
-
-# Save the new DataFrame to a CSV file in the "silver" folder
-result_df.to_csv(output_file, index=False)
-
-# Display message
-print('Aruoba-Diebold-Scotti Business Conditions (ADS) data processed and saved to silver layer')
+if __name__ == "__main__":
+    if len(sys.argv) > 2:
+        param1 = sys.argv[1]
+        bronze_data_folder = sys.argv[2]
+        silver_data_folder = sys.argv[3]
+        main(param1, bronze_data_folder , silver_data_folder)
+    else:
+        print("No parameters provided.")

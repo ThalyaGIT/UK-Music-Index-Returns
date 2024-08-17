@@ -1,59 +1,67 @@
 import pandas as pd
 import os
+import sys
 
-# Define the path to the CSV file
-data_folder = os.path.join(os.path.dirname(__file__), '..', '0_data-bronze')
-csv_file = os.path.join(data_folder, 'downloaded_Cloud.csv')
+def main(days, bronze_data_folder, silver_data_folder):   
 
-# prepare dates that exist in ftse 
-ftse_file = os.path.join(data_folder, 'downloaded_FTSE100.csv')
-ftse = pd.read_csv(ftse_file)
-ftse['Date'] = pd.to_datetime(ftse['date'])
-ftse.set_index('Date', inplace=True)
+    days = int(days)
 
-# Load your cloud cover data
-data  = pd.read_csv(csv_file)
+    # prepare dates that exist in ftse 
+    FTSE_file = os.path.join(bronze_data_folder, 'downloaded_FTSE100.csv')
+    FTSE = pd.read_csv(FTSE_file)
+    FTSE['Date'] = pd.to_datetime(FTSE['date'], dayfirst=True)
+    FTSE.set_index('Date', inplace=True)
 
-# Convert 'Date' to datetime format and 'Time' to string format
-data['Date'] = pd.to_datetime(data['Date'], format='%d/%m/%Y')
-data['Time'] = data['Time'].astype(str)
+    # Load your cloud cover data
+    Cloud_file = os.path.join(bronze_data_folder, 'downloaded_Cloud.csv')
+    data  = pd.read_csv(Cloud_file)
 
-# Filter the data to include only times between 08:00 and 17:00
-filtered_data = data[(data['Time'] >= '08:00:00') & (data['Time'] <= '17:00:00')].copy()
+    # Convert 'Date' to datetime format and 'Time' to string format
+    data['Date'] = pd.to_datetime(data['Date'], format='%d/%m/%Y')
+    data['Time'] = data['Time'].astype(str)
 
-# First , get the DCC!
-# Calculate the daily average cloud cover
-data = filtered_data.groupby('Date', as_index=False)['Cloud_Cover'].mean()
+    # Filter the data to include only times between 08:00 and 17:00
+    filtered_data = data[(data['Time'] >= '08:00:00') & (data['Time'] <= '17:00:00')].copy()
 
-# Filter df to only include rows where the 'Date' is in ftse's index
-data = data[data['Date'].isin(ftse.index)]
+    # First , get the DCC!
+    # Calculate the daily average cloud cover
+    data = filtered_data.groupby('Date', as_index=False)['Cloud_Cover'].mean()
 
-# Calculate the Rolling-7-days-Average-Cloud-Cover
-data['7D_Rolling_Avg_Cloud_Cover'] = data['Cloud_Cover'].rolling(window=7, min_periods=1).mean()
+    # Filter df to only include rows where the 'Date' is in ftse's index
+    data = data[data['Date'].isin(FTSE.index)]
 
-# Deseasonalize the cloud cover by substracting Rolling-7-days-Average-Cloud-Cover
-data['DCC'] = data['Cloud_Cover'] - data['7D_Rolling_Avg_Cloud_Cover'] 
+    # Calculate the Rolling-days-Average-Cloud-Cover
+    data['Rolling_Avg_Cloud_Cover'] = data['Cloud_Cover'].rolling(window=days, min_periods=1).mean()
 
-# Next, get the average daily change in deseasonalized cloud cover within a week
-# Calculate daily changes in DCC  (Today minus yesteday's DCC)
-data['Previous_Day_DCC'] = data['DCC'].shift(1)
-data['Change_in_DCC'] = data['DCC']- data['Previous_Day_DCC']
+    # Deseasonalize the cloud cover by substracting Rolling-days-Average-Cloud-Cover
+    data['DCC'] = data['Cloud_Cover'] - data['Rolling_Avg_Cloud_Cover'] 
 
-# Calculate the average change in DCC for the past seven dats
-data['7D_Rolling_Avg_Change_in_DCC'] = data['Change_in_DCC'].rolling(window=7, min_periods=1).mean()
+    # Next, get the average daily change in deseasonalized cloud cover within a week
+    # Calculate daily changes in DCC  (Today minus yesteday's DCC)
+    data['Previous_Day_DCC'] = data['DCC'].shift(1)
+    data['Change_in_DCC'] = data['DCC']- data['Previous_Day_DCC']
 
-# Select relevant columns to save
-#final_data = data[['Date','Cloud_Cover','7D_Rolling_Avg_Cloud_Cover','DCC','Previous_Day_DCC','Change_in_DCC', '7D_Rolling_Avg_Change_in_DCC']].drop_duplicates()
+    # Calculate the average change in DCC for the past whatever days
+    data['Rolling_Avg_Change_in_DCC'] = data['Change_in_DCC'].rolling(window=days, min_periods=1).mean()
 
-final_data = data[['Date','Cloud_Cover','7D_Rolling_Avg_Cloud_Cover','DCC', 'Previous_Day_DCC','Change_in_DCC', '7D_Rolling_Avg_Change_in_DCC']].drop_duplicates()
+    final_data = data[['Date','Rolling_Avg_Change_in_DCC']].drop_duplicates()
 
-# Define the path to save the new CSV file in the "silver" folder
-silver_folder = os.path.join(os.path.dirname(__file__), '..', '0-data-silver')
-output_file = os.path.join(silver_folder, 'Cloud.csv')
+    # Define the path to save the new CSV file in the "silver" folder
+    output_file = os.path.join(silver_data_folder, 'Cloud.csv')
 
-# Save the new DataFrame to a CSV file in the "silver" folder
-final_data.to_csv(output_file, index=False)
+    # Save the new DataFrame to a CSV file in the "silver" folder
+    final_data.to_csv(output_file, index=False)
 
-# Display message
-print('Deseasonalized Cloud Cover (DCC) data processed and saved to the silver layer.')
+    # Display message
+    print('___Deseasonalized Cloud Cover (DCC) data processed and saved to the silver layer.')
+
+if __name__ == "__main__":
+    if len(sys.argv) > 2:
+        param1 = sys.argv[1]
+        bronze_data_folder = sys.argv[2]
+        silver_data_folder = sys.argv[3]
+        main(param1, bronze_data_folder , silver_data_folder)
+    else:
+        print("No parameters provided.")
+
 

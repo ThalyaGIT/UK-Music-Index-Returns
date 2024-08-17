@@ -2,26 +2,19 @@ import pandas as pd
 import os
 import sys
 
+
 def main(days, bronze_data_folder, silver_data_folder):   
 
     days = int(days)
 
     # Define the path to the CSV file
-    csv_file = os.path.join(bronze_data_folder, 'downloaded_MSCI_UK.csv')
+    FTSE100_file = os.path.join(bronze_data_folder, 'downloaded_FTSE100.csv')
 
-    # prepare dates that exist in ftse 
-    FTSE_file = os.path.join(bronze_data_folder, 'downloaded_FTSE100.csv')
-    FTSE = pd.read_csv(FTSE_file)
-    FTSE['Date'] = pd.to_datetime(FTSE['date'], dayfirst=True)
-    FTSE.set_index('Date', inplace=True)
     # Load the CSV file into a pandas DataFrame
-    df = pd.read_csv(csv_file)
+    df = pd.read_csv(FTSE100_file)
 
     # Ensure the date column is in datetime format
-    df['Date'] = pd.to_datetime(df['Date'], dayfirst=True)
-
-    # Filter df to only include rows where the 'Date' is in ftse's index
-    df = df[df['Date'].isin(FTSE.index)]
+    df['Date'] = pd.to_datetime(df['date'],dayfirst=True)
 
     # Sort the DataFrame by date if it's not already sorted
     df = df.sort_values(by='Date')
@@ -33,19 +26,19 @@ def main(days, bronze_data_folder, silver_data_folder):
     df['Previous Price'] = df['Price'].shift(days)
 
     # Calculate the percentage change from the previous week's closing
-    df['% MSCIUK Change'] = ((df['Price'] - df['Previous Price']) / df['Previous Price']) * 100
+    df['% FTSE100 Change'] = ((df['Price'] - df['Previous Price']) / df['Previous Price']) * 100
 
-    # Round up % MSCIUK Change to 2 decimal places
-    df['% MSCIUK Change'] = df['% MSCIUK Change'].round(2)
+    # Round up % FTSE100 Change to 2 decimal places
+    df['% FTSE100 Change'] = df['% FTSE100 Change'].round(2)
 
-    df['Previous % MSCIUK Change'] = df['% MSCIUK Change'].shift(days)
+    df['Previous % FTSE100 Change'] = df['% FTSE100 Change'].shift(days)
 
-    df['Next % MSCIUK Change'] = df['% MSCIUK Change'].shift(-days)
+    df['Next % FTSE100 Change'] = df['% FTSE100 Change'].shift(-days)
 
     # Keep only relevant columns
-    result_df = df[['% MSCIUK Change', 'Previous % MSCIUK Change', 'Next % MSCIUK Change']]
+    result_df = df[['% FTSE100 Change', 'Previous % FTSE100 Change', 'Next % FTSE100 Change']]
 
-    # Drop rows with NaN values 
+    # Drop rows with NaN values
     result_df = result_df.copy()
     result_df.dropna(inplace=True)
 
@@ -53,13 +46,13 @@ def main(days, bronze_data_folder, silver_data_folder):
     result_df.reset_index(inplace=True)
 
     # Define the path to save the new CSV file in the "silver" folder
-    output_file = os.path.join(silver_data_folder, 'MSCIUK.csv')
+    output_file = os.path.join(silver_data_folder, 'FTSE100.csv')
 
     # Save the new DataFrame to a CSV file in the "silver" folder
     result_df.to_csv(output_file, index=False)
 
     # Display message
-    print('___MSCIUK data processed and saved to silver layer')
+    print('___FTSE 100 data processed and saved to silver layer')
     
 if __name__ == "__main__":
     if len(sys.argv) > 2:

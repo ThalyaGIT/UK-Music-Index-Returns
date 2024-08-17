@@ -1,58 +1,72 @@
 import pandas as pd
 import os
+import sys
 
-# Define the path to the CSV file
-data_folder = os.path.join(os.path.dirname(__file__), '..', '0_data-bronze')
-csv_file = os.path.join(data_folder, 'downloaded_MSCI.csv')
+def main(days, bronze_data_folder, silver_data_folder):   
 
-# prepare dates that exist in ftse 
-ftse_file = os.path.join(data_folder, 'downloaded_FTSE100.csv')
-ftse = pd.read_csv(ftse_file)
-ftse['Date'] = pd.to_datetime(ftse['date'])
-ftse.set_index('Date', inplace=True)
+    days = int(days)
 
-# Load the CSV file into a pandas DataFrame
-df = pd.read_csv(csv_file)
+    # Define the path to the CSV file
+    csv_file = os.path.join(bronze_data_folder, 'downloaded_MSCI.csv')
 
-# Ensure the date column is in datetime format
-df['Date'] = pd.to_datetime(df['Date'])
+    # prepare dates that exist in ftse 
+    FTSE_file = os.path.join(bronze_data_folder, 'downloaded_FTSE100.csv')
+    FTSE = pd.read_csv(FTSE_file)
+    FTSE['Date'] = pd.to_datetime(FTSE['date'], dayfirst=True)
+    FTSE.set_index('Date', inplace=True)
+    
+    # Load the CSV file into a pandas DataFrame
+    df = pd.read_csv(csv_file)
 
-# Filter df to only include rows where the 'Date' is in ftse's index
-df = df[df['Date'].isin(ftse.index)]
+    # Ensure the date column is in datetime format
+    df['Date'] = pd.to_datetime(df['Date'], dayfirst=True)
 
-# Sort the DataFrame by date if it's not already sorted
-df = df.sort_values(by='Date')
+    # Filter df to only include rows where the 'Date' is in ftse's index
+    df = df[df['Date'].isin(FTSE.index)]
 
-# Set the date column as the index
-df.set_index('Date', inplace=True)
+    # Sort the DataFrame by date if it's not already sorted
+    df = df.sort_values(by='Date')
 
+    # Set the date column as the index
+    df.set_index('Date', inplace=True)
 
-# Shift the 'Price' column to get the lagged data
-df['MSCI Previous Week Price'] = df['Price'].shift(7)
+    # Shift the 'Price' column to get the lagged data
+    df['Previous Price'] = df['Price'].shift(days)
 
-# Calculate the percentage change from the previous week's closing
-df['% MSCI Change'] = ((df['Price'] - df['MSCI Previous Week Price']) / df['MSCI Previous Week Price']) * 100
+    # Calculate the percentage change from the previous week's closing
+    df['% MSCI Change'] = ((df['Price'] - df['Previous Price']) / df['Previous Price']) * 100
 
-# Round up % FTSE100 Change to 2 decimal places
-df['% MSCI Change'] = df['% MSCI Change'].round(2)
+    # Round up % MSCI Change to 2 decimal places
+    df['% MSCI Change'] = df['% MSCI Change'].round(2)
 
-df['Previous Week % MSCI Change'] = df['% MSCI Change'].shift(7)
+    df['Previous % MSCI Change'] = df['% MSCI Change'].shift(days)
 
-# Keep only relevant columns
-result_df = df[['Price', 'MSCI Previous Week Price', 'Previous Week % MSCI Change', '% MSCI Change']]
+    df['Next % MSCI Change'] = df['% MSCI Change'].shift(-days)
 
-# Drop rows with NaN values (first 7 rows will have NaN for 'Previous Week Price')
-result_df.dropna(inplace=True)
+    # Keep only relevant columns
+    result_df = df[['% MSCI Change', 'Previous % MSCI Change', 'Next % MSCI Change']]
 
-# Reset the index to have a clean DataFrame
-result_df.reset_index(inplace=True)
+    # Drop rows with NaN values 
+    result_df = result_df.copy()
+    result_df.dropna(inplace=True)
 
-# Define the path to save the new CSV file in the "silver" folder
-silver_folder = os.path.join(os.path.dirname(__file__), '..', '0-data-silver')
-output_file = os.path.join(silver_folder, 'MSCI.csv')
+    # Reset the index to have a clean DataFrame
+    result_df.reset_index(inplace=True)
 
-# Save the new DataFrame to a CSV file in the "silver" folder
-result_df.to_csv(output_file, index=False)
+    # Define the path to save the new CSV file in the "silver" folder
+    output_file = os.path.join(silver_data_folder, 'MSCI.csv')
 
-# Display message
-print('MSCI data processed and saved to silver layer')
+    # Save the new DataFrame to a CSV file in the "silver" folder
+    result_df.to_csv(output_file, index=False)
+
+    # Display message
+    print('___MSCI data processed and saved to silver layer')
+    
+if __name__ == "__main__":
+    if len(sys.argv) > 2:
+        param1 = sys.argv[1]
+        bronze_data_folder = sys.argv[2]
+        silver_data_folder = sys.argv[3]
+        main(param1, bronze_data_folder , silver_data_folder)
+    else:
+        print("No parameters provided.")
