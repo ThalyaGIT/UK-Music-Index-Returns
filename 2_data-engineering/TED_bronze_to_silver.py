@@ -14,6 +14,9 @@ df = pd.read_csv(csv_file)
 # Ensure the date column is in datetime format
 df['Date'] = pd.to_datetime(df['Date'], format="%d/%m/%Y")
 
+# Rename 'Value' column to 'TED'
+df.rename(columns={'Value': 'TED'}, inplace=True)
+
 # Sort the DataFrame by date if it's not already sorted
 df = df.sort_values(by='Date')
 
