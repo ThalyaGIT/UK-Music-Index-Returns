@@ -2,7 +2,7 @@ import pandas as pd
 import os
 import sys
 
-def main(days, bronze_data_folder, silver_data_folder):   
+def main( bronze_data_folder, silver_data_folder):   
 
     # Define the path to the CSV file
     csv_file = os.path.join(bronze_data_folder, 'downloaded_VIX.csv')
@@ -39,9 +39,8 @@ def main(days, bronze_data_folder, silver_data_folder):
      
 if __name__ == "__main__":
     if len(sys.argv) > 2:
-        param1 = sys.argv[1]
         bronze_data_folder = sys.argv[3]
         silver_data_folder = sys.argv[4]
-        main(param1, bronze_data_folder , silver_data_folder)
+        main( bronze_data_folder , silver_data_folder)
     else:
         print("No parameters provided.")
