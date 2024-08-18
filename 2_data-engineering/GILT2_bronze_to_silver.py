@@ -2,10 +2,10 @@ import pandas as pd
 import os
 import sys
 
-
-def main(days, bronze_data_folder, silver_data_folder):   
+def main(days, effect_days, bronze_data_folder, silver_data_folder):   
 
     days = int(days)
+    effect_days = int(effect_days)
         
     # Define the path to the CSV file
     GILT2_file = os.path.join(bronze_data_folder, 'downloaded_GILT2.csv')
@@ -33,7 +33,7 @@ def main(days, bronze_data_folder, silver_data_folder):
 
     df['Previous % GILT2 Change'] = df['% GILT2 Change'].shift(days)
 
-    df['Next % GILT2 Change'] = df['% GILT2 Change'].shift(-days)
+    df['Next % GILT2 Change'] = df['% GILT2 Change'].shift(-effect_days)
 
     # Keep only relevant columns
     result_df = df[['% GILT2 Change', 'Previous % GILT2 Change', 'Next % GILT2 Change']]
@@ -55,11 +55,14 @@ def main(days, bronze_data_folder, silver_data_folder):
     # Display message
     print('___GILT2 data processed and saved to silver layer')
     
+    
 if __name__ == "__main__":
-    if len(sys.argv) > 2:
-        param1 = sys.argv[1]
-        bronze_data_folder = sys.argv[2]
-        silver_data_folder = sys.argv[3]
-        main(param1, bronze_data_folder , silver_data_folder)
+    if len(sys.argv) > 3:
+        days = sys.argv[1]
+        effect_days = sys.argv[2]
+        bronze_data_folder = sys.argv[3]
+        silver_data_folder = sys.argv[4]
+
+        main(days, effect_days, bronze_data_folder, silver_data_folder)
     else:
         print("No parameters provided.")

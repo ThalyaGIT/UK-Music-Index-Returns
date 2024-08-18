@@ -2,10 +2,10 @@ import pandas as pd
 import os
 import sys
 
-
-def main(days, bronze_data_folder, silver_data_folder):   
+def main(days, effect_days, bronze_data_folder, silver_data_folder):   
 
     days = int(days)
+    effect_days = int(effect_days)
 
     # Define the path to the CSV file
     FTSE100_file = os.path.join(bronze_data_folder, 'downloaded_FTSE100.csv')
@@ -14,7 +14,7 @@ def main(days, bronze_data_folder, silver_data_folder):
     df = pd.read_csv(FTSE100_file)
 
     # Ensure the date column is in datetime format
-    df['Date'] = pd.to_datetime(df['date'],dayfirst=True)
+    df['Date'] = pd.to_datetime(df['date'], dayfirst=True)
 
     # Sort the DataFrame by date if it's not already sorted
     df = df.sort_values(by='Date')
@@ -33,7 +33,8 @@ def main(days, bronze_data_folder, silver_data_folder):
 
     df['Previous % FTSE100 Change'] = df['% FTSE100 Change'].shift(days)
 
-    df['Next % FTSE100 Change'] = df['% FTSE100 Change'].shift(-days)
+    # Use -effect_days instead of -days for the next shift
+    df['Next % FTSE100 Change'] = df['% FTSE100 Change'].shift(-effect_days)
 
     # Keep only relevant columns
     result_df = df[['% FTSE100 Change', 'Previous % FTSE100 Change', 'Next % FTSE100 Change']]
@@ -55,10 +56,12 @@ def main(days, bronze_data_folder, silver_data_folder):
     print('___FTSE 100 data processed and saved to silver layer')
     
 if __name__ == "__main__":
-    if len(sys.argv) > 2:
-        param1 = sys.argv[1]
-        bronze_data_folder = sys.argv[2]
-        silver_data_folder = sys.argv[3]
-        main(param1, bronze_data_folder , silver_data_folder)
+    if len(sys.argv) > 3:
+        days = sys.argv[1]
+        effect_days = sys.argv[2]
+        bronze_data_folder = sys.argv[3]
+        silver_data_folder = sys.argv[4]
+
+        main(days, effect_days, bronze_data_folder, silver_data_folder)
     else:
         print("No parameters provided.")

@@ -2,7 +2,7 @@ import pandas as pd
 import os
 import sys
 
-def main(days, bronze_data_folder, silver_data_folder):   
+def main(days, silver_data_folder):   
 
     days = int(days)
 
@@ -59,9 +59,9 @@ def main(days, bronze_data_folder, silver_data_folder):
 if __name__ == "__main__":
     if len(sys.argv) > 2:
         param1 = sys.argv[1]
-        bronze_data_folder = sys.argv[2]
-        silver_data_folder = sys.argv[3]
-        main(param1, bronze_data_folder , silver_data_folder)
+        silver_data_folder = sys.argv[4]
+        main(param1, silver_data_folder)
     else:
         print("No parameters provided.")
+
 
