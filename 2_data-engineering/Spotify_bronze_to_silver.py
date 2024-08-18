@@ -19,16 +19,16 @@ def main(days, bronze_data_folder, silver_data_folder):
     df['Date'] = pd.to_datetime(df['date'])
 
     # Filter to only include the top 50 ranks
-    df_top50 = df[df['rank'] <= 50]
+    # df_top50 = df[df['rank'] <= 50]
 
     # Sort the DataFrame by date if it's not already sorted
-    df_top50 = df_top50.sort_values(by='Date')
+    df = df.sort_values(by='Date')
 
     # Set the date column as the index
-    df_top50.set_index('Date', inplace=True)
+    df.set_index('Date', inplace=True)
 
     # Group by date and calculate SWAV
-    df_swav = df_top50.groupby('Date').apply(lambda x: (x['streams'] * x['Valence']).sum() / x['streams'].sum()).reset_index(name='SWAV')
+    df_swav = df.groupby('Date').apply(lambda x: (x['streams'] * x['Valence']).sum() / x['streams'].sum()).reset_index(name='SWAV')
 
     # Ensure 'Date' is a datetime column
     df_swav['Date'] = pd.to_datetime(df_swav['Date'])
