@@ -19,7 +19,7 @@ def main(days, bronze_data_folder, silver_data_folder):
     df['Date'] = pd.to_datetime(df['date'])
 
     # Filter to only include the top 50 ranks
-    df_top50 = df[df['rank'] >= 100]
+    df_top50 = df[df['rank'] >= 150]
 
     # Sort the DataFrame by date if it's not already sorted
     df_top50 = df_top50.sort_values(by='Date')
