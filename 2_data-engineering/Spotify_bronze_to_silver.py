@@ -18,29 +18,32 @@ def main(days, bronze_data_folder, silver_data_folder):
     # Ensure the date column is in datetime format
     df['Date'] = pd.to_datetime(df['date'])
 
+    # Filter to only include the top 50 ranks
+    df_top50 = df[df['rank'] <= 50]
+
     # Sort the DataFrame by date if it's not already sorted
-    df = df.sort_values(by='Date')
+    df_top50 = df_top50.sort_values(by='Date')
 
     # Set the date column as the index
-    df.set_index('Date', inplace=True)
+    df_top50.set_index('Date', inplace=True)
 
     # Group by date and calculate SWAV
-    df = df.groupby('Date').apply(lambda x: (x['streams'] * x['Valence']).sum() / x['streams'].sum()).reset_index(name='SWAV')
+    df_swav = df_top50.groupby('Date').apply(lambda x: (x['streams'] * x['Valence']).sum() / x['streams'].sum()).reset_index(name='SWAV')
 
     # Ensure 'Date' is a datetime column
-    df['Date'] = pd.to_datetime(df['Date'])
+    df_swav['Date'] = pd.to_datetime(df_swav['Date'])
 
     # Set the date column as the index again
-    df.set_index('Date', inplace=True)
+    df_swav.set_index('Date', inplace=True)
 
-    # Shift the 'Price' column to get the lagged data
-    df['SWAV_lagged'] = df['SWAV'].shift(days)
+    # Shift the 'SWAV' column to get the lagged data
+    df_swav['SWAV_lagged'] = df_swav['SWAV'].shift(days)
 
     # Calculate Change in SWAV
-    df['Change in SWAV'] = df['SWAV'] - df['SWAV_lagged']
+    df_swav['Change in SWAV'] = df_swav['SWAV'] - df_swav['SWAV_lagged']
 
     # Select only relevant columns
-    result_df = df[['SWAV', 'SWAV_lagged', 'Change in SWAV']].reset_index()
+    result_df = df_swav[['SWAV', 'SWAV_lagged', 'Change in SWAV']].reset_index()
 
     # Save to the output CSV and path.
     result_df.to_csv(output_file_path, index=False)
@@ -50,12 +53,10 @@ def main(days, bronze_data_folder, silver_data_folder):
     
     
 if __name__ == "__main__":
-    if len(sys.argv) > 2:
+    if len(sys.argv) > 3:
         param1 = sys.argv[1]
         bronze_data_folder = sys.argv[3]
         silver_data_folder = sys.argv[4]
         main(param1, bronze_data_folder , silver_data_folder)
     else:
         print("No parameters provided.")
-
-
