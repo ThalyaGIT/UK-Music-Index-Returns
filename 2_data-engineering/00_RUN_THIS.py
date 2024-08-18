@@ -18,6 +18,7 @@ scripts = [
     'FTSE_AllShare_bronze_to_silver.py',
     'FTSE_SmallCap_bronze_to_silver.py',
     'GILT2_bronze_to_silver.py',
+    'HOLD_bronze_to_silver.py',
     'MSCI_bronze_to_silver.py',
     'MSCI_UK_bronze_to_silver.py',
     'TED_bronze_to_silver.py',

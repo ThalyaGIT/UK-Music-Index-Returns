@@ -25,6 +25,11 @@ def main(days, silver_data_folder):
                 , 'VIX.csv'
                 , 'TED.csv'
                 , 'Spotify.csv'
+                , 'Barc.csv'
+                , 'Voda.csv'
+                , 'BP.csv'
+                , 'Glen.csv'
+                , 'Lloyds.csv'
                 ]
 
     # Initialize an empty list to store DataFrames
