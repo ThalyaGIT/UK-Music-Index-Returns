@@ -42,7 +42,7 @@ def main(days, effect_days, bronze_data_folder, silver_data_folder):
 
     df['Previous % MSCI Change'] = df['% MSCI Change'].shift(days)
 
-    df['Next % MSCI Change'] = df['% MSCI Change'].shift(-effect_days)
+    df['Next % MSCI Change'] = df['% MSCI Change'].shift(-days)
 
     # Keep only relevant columns
     result_df = df[['% MSCI Change', 'Previous % MSCI Change', 'Next % MSCI Change']]

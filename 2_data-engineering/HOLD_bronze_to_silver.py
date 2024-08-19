@@ -35,7 +35,7 @@ def process_file(days, effect_days, bronze_data_folder, silver_data_folder, file
 
     df[f'Previous % {company_name} Change'] = df[f'% {company_name} Change'].shift(days)
 
-    df[f'Next % {company_name} Change'] = df[f'% {company_name} Change'].shift(-effect_days)
+    df[f'Next % {company_name} Change'] = df[f'% {company_name} Change'].shift(-days)
 
     # Keep only relevant columns
     result_df = df[[f'% {company_name} Change', f'Previous % {company_name} Change', f'Next % {company_name} Change']]

@@ -33,7 +33,7 @@ def main(days, effect_days, bronze_data_folder, silver_data_folder):
 
     df['Previous % GILT2 Change'] = df['% GILT2 Change'].shift(days)
 
-    df['Next % GILT2 Change'] = df['% GILT2 Change'].shift(-effect_days)
+    df['Next % GILT2 Change'] = df['% GILT2 Change'].shift(-days)
 
     # Keep only relevant columns
     result_df = df[['% GILT2 Change', 'Previous % GILT2 Change', 'Next % GILT2 Change']]

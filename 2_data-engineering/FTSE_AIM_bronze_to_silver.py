@@ -33,7 +33,7 @@ def main(days, effect_days, bronze_data_folder, silver_data_folder):
 
     df['Previous % FTSEAIM Change'] = df['% FTSEAIM Change'].shift(days)
 
-    df['Next % FTSEAIM Change'] = df['% FTSEAIM Change'].shift(-effect_days)
+    df['Next % FTSEAIM Change'] = df['% FTSEAIM Change'].shift(-days)
 
     # Keep only relevant columns
     result_df = df[['% FTSEAIM Change', 'Previous % FTSEAIM Change', 'Next % FTSEAIM Change']]
