@@ -2,7 +2,9 @@ import pandas as pd
 import os
 import sys
 
-def main( bronze_data_folder, silver_data_folder):   
+def main(days, bronze_data_folder, silver_data_folder):   
+
+    days = int(days)
 
     # Define the path to the CSV file
     csv_file = os.path.join(bronze_data_folder, 'downloaded_TED.csv')
@@ -22,6 +24,12 @@ def main( bronze_data_folder, silver_data_folder):
     # Set the date column as the index
     df.set_index('Date', inplace=True)
 
+    # Shift the 'TED' column to get the lagged data
+    df['Previous TED'] = df['TED'].shift(days)
+
+    # Calculate the EPU_Change from the previous week's closing
+    df['TED_Change'] = df['TED'] - df['Previous TED']
+
     # Drop rows with NaN values 
     df.dropna(inplace=True)
 
@@ -38,10 +46,11 @@ def main( bronze_data_folder, silver_data_folder):
     print('___TED data processed and saved to silver layer')
        
 if __name__ == "__main__":
-    if len(sys.argv) > 2:
+    if len(sys.argv) > 3:
+        param1 = sys.argv[1]
         bronze_data_folder = sys.argv[3]
         silver_data_folder = sys.argv[4]
-        main(bronze_data_folder , silver_data_folder)
+        main(param1, bronze_data_folder , silver_data_folder)
     else:
         print("No parameters provided.")
 
