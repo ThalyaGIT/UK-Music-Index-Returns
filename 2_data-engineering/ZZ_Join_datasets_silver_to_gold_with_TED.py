@@ -16,14 +16,14 @@ def main(days, silver_data_folder):
                 , 'Cloud.csv'                
                 , 'FTSE100.csv'
                 , 'FTSE250.csv'
-                , 'FTSEAIM.csv'
+                ,  'FTSEAIM.csv'
                 , 'FTSEAllShare.csv'
                 , 'FTSESmallCap.csv'
                 , 'MSCI.csv'
                 , 'MSCIUK.csv'
                 , 'GILT2.csv'
                 , 'VIX.csv'
-                #, 'TED.csv'
+                , 'TED.csv'
                 , 'Spotify.csv'
                 , 'Barc.csv'
                 , 'Voda.csv'
@@ -59,10 +59,10 @@ def main(days, silver_data_folder):
     cleaned_df = merged_df.dropna()
 
     # Save the cleaned DataFrame to a CSV file in the 'gold' folder
-    output_file_path = os.path.join(gold_path, f'data_{days}_days.csv')
+    output_file_path = os.path.join(gold_path, f'data_{days}_days_TED.csv')
     cleaned_df.to_csv(output_file_path, index=False)
 
-    print(f"____DONE: Merged data in Gold layer as data_{days}_days.csv")
+    print(f"____DONE: Merged data in Gold layer as data_{days}_days_TED.csv")
     
 if __name__ == "__main__":
     if len(sys.argv) > 2:

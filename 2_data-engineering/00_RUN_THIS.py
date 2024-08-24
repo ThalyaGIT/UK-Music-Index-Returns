@@ -24,7 +24,8 @@ scripts = [
     'TED_bronze_to_silver.py',
     'VIX_bronze_to_silver.py',
     'Spotify_bronze_to_silver.py',
-    'ZZ_Join_datasets_silver_to_gold.py'
+    'ZZ_Join_datasets_silver_to_gold.py',
+    'ZZ_Join_datasets_silver_to_gold_with_TED.py'
 ]
 
 # Function to run each script
