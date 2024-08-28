@@ -63,6 +63,24 @@ Sttringency change also interact with music change.
 Don't overlap (week/month) 
 
 
+28/8 catch up
+Don't use TED Change
+
+1. Identify Days where level TED Spread is in 80pc Dummy =1, Dummy =0 
+Control with
+Interaction Limits to Arbitrage 
+
+Coefficient positive (Tight )
+
+December and January 
+Don't exclude
+Don't vincersize
+
+Dummy variable for each month, Jan = 1  Feb dummy 
+regress average SWAV on these dummies, 
+take errors/residual as happiness of music
+
+
 
 
 
