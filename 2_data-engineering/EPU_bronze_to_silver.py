@@ -10,6 +10,7 @@ def main(days, bronze_data_folder, silver_data_folder):
     FTSE_file = os.path.join(bronze_data_folder, 'downloaded_FTSE100.csv')
     FTSE = pd.read_csv(FTSE_file)
     FTSE['Date'] = pd.to_datetime(FTSE['date'], dayfirst=True)
+    FTSE = FTSE[FTSE['Date'].dt.weekday == 4]
     FTSE.set_index('Date', inplace=True)
 
     # Load the CSV file into a pandas DataFrame

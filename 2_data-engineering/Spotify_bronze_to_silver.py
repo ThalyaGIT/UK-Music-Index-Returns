@@ -32,6 +32,7 @@ def main(days, bronze_data_folder, silver_data_folder):
 
     # Ensure 'Date' is a datetime column
     df_swav['Date'] = pd.to_datetime(df_swav['Date'])
+    df_swav = df_swav[df_swav['Date'].dt.weekday == 4]
 
     # Set the date column as the index again
     df_swav.set_index('Date', inplace=True)

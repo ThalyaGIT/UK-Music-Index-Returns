@@ -16,7 +16,8 @@ def process_file(days, effect_days, bronze_data_folder, silver_data_folder, file
     df = pd.read_csv(file_path)
 
     # Ensure the date column is in datetime format
-    df['Date'] = pd.to_datetime(df['Date'], dayfirst=True) 
+    df['Date'] = pd.to_datetime(df['Date'], dayfirst=True)
+    df = df[df['Date'].dt.weekday == 4]
 
     # Sort the DataFrame by date if it's not already sorted
     df = df.sort_values(by='Date')

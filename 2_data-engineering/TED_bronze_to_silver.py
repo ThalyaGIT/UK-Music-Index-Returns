@@ -14,6 +14,7 @@ def main(days, bronze_data_folder, silver_data_folder):
 
     # Ensure the date column is in datetime format
     df['Date'] = pd.to_datetime(df['Date'], format="%d/%m/%Y")
+    df = df[df['Date'].dt.weekday == 4]
 
     # Rename 'Value' column to 'TED'
     df.rename(columns={'Value': 'TED'}, inplace=True)

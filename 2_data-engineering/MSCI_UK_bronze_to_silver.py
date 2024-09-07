@@ -20,6 +20,7 @@ def main(days, effect_days, bronze_data_folder, silver_data_folder):
 
     # Ensure the date column is in datetime format
     df['Date'] = pd.to_datetime(df['Date'], dayfirst=True)
+    df = df[df['Date'].dt.weekday == 4]
 
     # Filter df to only include rows where the 'Date' is in ftse's index
     df = df[df['Date'].isin(FTSE.index)]

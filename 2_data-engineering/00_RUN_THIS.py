@@ -44,7 +44,7 @@ def run_all_scripts(scripts, days_list, effect_days, bronze_data_folder, silver_
             run_script(script, days, effect_days, bronze_data_folder, silver_data_folder)
 
 # List of days to loop over
-days_list = [1,3,5,10,20]
+days_list = [1,2]
 effect_days = 5  # Set effect_days value
 
 # Run all scripts with the given parameters
