@@ -52,9 +52,6 @@ def main(days, silver_data_folder):
     # Add festive Dummy
     merged_df['festive'] = merged_df['Date'].apply(lambda x: 1 if x.month in [12, 1] else 0)
 
-    # # Identify rows with null values
-    # rows_with_nulls = merged_df[merged_df.isnull().any(axis=1)]
-
     # Remove rows with null values
     cleaned_df = merged_df.dropna()
 

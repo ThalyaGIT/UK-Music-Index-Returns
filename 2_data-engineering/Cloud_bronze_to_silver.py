@@ -28,8 +28,10 @@ def main(days, bronze_data_folder, silver_data_folder):
     # Calculate the daily average cloud cover
     data = filtered_data.groupby('Date', as_index=False)['Cloud_Cover'].mean()
 
-    # Filter df to only include rows where the 'Date' is in ftse's index
+    # Filter df to only include rows where the 'Date' is in FTSE 100 index
     data = data[data['Date'].isin(FTSE.index)]
+
+    data.set_index('Date', inplace=True)
 
     # Calculate the Rolling-days-Average-Cloud-Cover
     data['Rolling_Avg_Cloud_Cover'] = data['Cloud_Cover'].rolling(window=days, min_periods=1).mean()
